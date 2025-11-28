@@ -139,5 +139,5 @@ Computer Science Student - University of Turin
 ---
 
 *This project was developed as part of university coursework to demonstrate full-stack web development capabilities and modern database management techniques.*
-```
+
 

@@ -15,7 +15,7 @@ import visualdb.visualdbapi.visualdb.VisualDbManager;
 
 @WebServlet(
         name = "VisualDb_Login_Servlet",
-        urlPatterns = {LoginService.LOGIN_PATH, LoginService.LOGOUT_PATH, "/"}
+        urlPatterns = {LoginService.LOGIN_PATH, LoginService.LOGOUT_PATH}
 )
 public class LoginServlet extends HttpServlet {
 
@@ -25,7 +25,7 @@ public class LoginServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         String token = request.getHeader("authorization");
-
+        System.out.println("hello world!");
         // GET accetta sia /login che /logout
         // GET /login restituisce il login status corrente
         // GET /logout effettua il logout e restituisce l'esito
@@ -37,6 +37,7 @@ public class LoginServlet extends HttpServlet {
         System.out.println("[DEBUG LOGIN SERVLET] -> status utente: "+username);
 
         if (request.getServletPath().equals(LoginService.LOGIN_PATH)) {
+
             if (!username.isEmpty()) {
                 result = outputJsonBuild("status", privilege, true, "");
                 result.addProperty("username", username);
@@ -46,7 +47,7 @@ public class LoginServlet extends HttpServlet {
             }
         } else if (request.getServletPath().equals(LoginService.LOGOUT_PATH)) {
             if (!username.isEmpty()) {
-                System.out.println("[DEBUG LOGIN SERVLET] -> logout  utente: "+username);
+                System.out.println("[DEBUG LOGIN SERVLET] -> logout  utente: " + username);
                 LoginService.doLogOut(username);
                 result = outputJsonBuild("logout", privilege, true, "");
                 result.addProperty("username", username);

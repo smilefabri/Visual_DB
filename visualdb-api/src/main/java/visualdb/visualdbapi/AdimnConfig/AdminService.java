@@ -8,14 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import static visualdb.visualdbapi.login.TokenStorage.isUserActive;
 
 public class AdminService {
     public static final String INFO_USER_PATH = "/admin/infoUser";
-
+    private static final Logger logger = Logger.getLogger(AdminService.class.getName());
     public AdminService(){
-
     }
 
     public JsonArray GetInfoUser() {
@@ -48,7 +48,7 @@ public class AdminService {
             st.close();
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return jsonArray;
     }

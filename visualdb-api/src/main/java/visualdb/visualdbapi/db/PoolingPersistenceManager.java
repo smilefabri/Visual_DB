@@ -7,10 +7,13 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class PoolingPersistenceManager {
 
-  private static PoolingPersistenceManager instance;
+    private static final Logger logger = Logger.getLogger(PoolingPersistenceManager.class.getName());
+    private static PoolingPersistenceManager instance;
 
   public static PoolingPersistenceManager getPersistenceManager() {
     if (instance == null) {
@@ -28,8 +31,9 @@ public class PoolingPersistenceManager {
       config.setJdbcUrl(
         "jdbc:postgresql://localhost:5432/VisualDB?currentSchema=public"
       );
-      config.setUsername("jakarta");
-      config.setPassword("jakarta");
+      config.setUsername(System.getenv("DB_USER"));
+      config.setPassword(System.getenv("DB_PASSWORD"));
+
       config.addDataSourceProperty(
         "dataSourceClassName",
         "org.postgresql.ds.PGSimpleDataSource"
@@ -38,7 +42,7 @@ public class PoolingPersistenceManager {
 
       dataSource = new HikariDataSource(config);
     } catch (ClassNotFoundException ex) {
-      ex.printStackTrace();
+        logger.log(Level.SEVERE, ex.getMessage(), ex);
     }
   }
 
@@ -54,7 +58,7 @@ public class PoolingPersistenceManager {
         DriverManager.deregisterDriver(en.nextElement());
       }
     } catch (SQLException ex) {
-      ex.printStackTrace();
+      logger.log(Level.SEVERE, ex.getMessage(), ex);
     }
   }
 }

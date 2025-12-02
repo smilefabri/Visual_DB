@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.sql.*;
 import visualdb.visualdbapi.db.PoolingPersistenceManager;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class ServiceTableManager {
 
@@ -17,8 +19,9 @@ public class ServiceTableManager {
   public static final String RENAME_PATH = "/table/rename";
 
   public ServiceTableManager() {}
+    private static final Logger logger = Logger.getLogger(ServiceTableManager.class.getName());
 
-  public static JsonArray ResultSetToJson(ResultSet rs) throws SQLException {
+    public static JsonArray ResultSetToJson(ResultSet rs) throws SQLException {
     JsonArray jsonArray = new JsonArray();
     ResultSetMetaData metaData = rs.getMetaData();
     int columnCount = metaData.getColumnCount();
@@ -74,7 +77,7 @@ public class ServiceTableManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE,"errore durante la consulta del table: "+nameTable,e);
     }
 
     return result;
@@ -104,7 +107,7 @@ public class ServiceTableManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE,"errore durante la consulta della table by id: "+ idDb ,e);
     }
     return result;
   }
@@ -125,7 +128,7 @@ public class ServiceTableManager {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE,"errore durante l'eliminazione della table: "+nameTable,e);
     }
 
     boolean result = false;
@@ -147,7 +150,7 @@ public class ServiceTableManager {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE,"errore durante l'eliminazione della table: "+nameTable,e);
     }
     return result;
   }
@@ -159,7 +162,7 @@ public class ServiceTableManager {
   ) {
     boolean result = true;
     String query =
-      "INSERT INTO \"VisualDB\".public.\"OperazioneTable\" (utente,idtable,data_operazione,tipo,ora_operazione) VALUES (?,?,?,?,?)";
+      "INSERT INTO \"VisualDB\".public.\"OperazioneTable\" (utente,table,data_operazione,tipo,ora_operazione) VALUES (?,?,?,?,?)";
     try (
       Connection conn = PoolingPersistenceManager
         .getPersistenceManager()
@@ -181,7 +184,7 @@ public class ServiceTableManager {
 
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE,"errore durante la modifica,con tipo operazione: "+typeOfOp+",  da parte dell'utente: "+username+", alla tabella cond id: "+idTable,e);
     }
     return result;
   }
@@ -216,7 +219,7 @@ public class ServiceTableManager {
         if (generatedKeys.next()) {
           generatedId = generatedKeys.getInt(1);
         } else {
-          System.out.println("Errore nel recupero dell'ID generato.");
+            logger.severe("Errore nel recupero dell'ID generato");
         }
       } else {
         return new ResultBoolInt(false, 0);
@@ -241,7 +244,7 @@ public class ServiceTableManager {
       }
       preparedStatement.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, "Errore durante la creazione della table: "+nomeTable+", nel database con id: "+idDatabase, e);
     }
     return new ResultBoolInt(result, generatedId);
   }
@@ -312,7 +315,7 @@ public class ServiceTableManager {
 
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, "Errore durante la creazione di una colonna:"+nameNewColumn+", nella table: "+nameTable+", con tipo:"+typeDataColumn+", nel database con id: "+ idDb, e);
     }
     return result;
   }
@@ -361,7 +364,7 @@ public class ServiceTableManager {
       st.close();
       preparedStatement.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, "Errore nel rinominare la table: "+nameTable+"nel database con id: " + idDatabase, e);
     }
 
     return result;
@@ -437,7 +440,8 @@ public class ServiceTableManager {
         }
       }
     } else {
-      System.out.println("caso strano null, forse un errore");
+
+      //System.out.println("caso strano null, forse un errore");
       preparedStatement.setNull(parameterIndex, Types.NULL);
     }
   }
@@ -521,9 +525,10 @@ public class ServiceTableManager {
         rs.close();
 
         // Stampare l'array JSON risultante
-        System.out.println("JSON Result: " + jsonArray);
+        //System.out.println("JSON Result: " + jsonArray);
       } catch (SQLException e) {
         conn.setAutoCommit(true);
+        logger.log(Level.SEVERE, "Errore durante l'esecuzione della query le informazioni: "+jsonArray+",\n per inserire una nuova row nella table: "+nameTable, e);
         throw new RuntimeException(
           "Errore durante l'esecuzione della query",
           e
@@ -595,6 +600,7 @@ public class ServiceTableManager {
         preparedStatement.executeUpdate();
         conn.commit();
       } catch (SQLException e) {
+          logger.log(Level.SEVERE, "error durante l'esecuzione, avvio rollback", e);
         conn.rollback();
         throw new RuntimeException(e);
       }finally {
@@ -665,7 +671,7 @@ public class ServiceTableManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, "Errore nel verifare se la table: "+nameTable+": nel database con id: "+idDb+", esiste", e);
     }
 
     return result;
@@ -701,9 +707,10 @@ public class ServiceTableManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, "Errore durante la verifica del posidimento della table: "+nameTableToDelete+" da parte di: "+nameOfOwner, e);
     }
 
     return result;
+
   }
 }

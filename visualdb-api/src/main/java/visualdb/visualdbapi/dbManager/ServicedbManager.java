@@ -4,10 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import visualdb.visualdbapi.db.PoolingPersistenceManager;
 import visualdb.visualdbapi.tableManager.ResultBoolInt;
 import visualdb.visualdbapi.tableManager.ServiceTableManager;
@@ -19,6 +17,8 @@ public class ServicedbManager {
   public static final String NEW_PATH = "/database/new";
   public static final String RETURN_ALL_TABLE = "/database/returntable";
   public static final String RENAME_PATH = "/database/rename";
+
+  private static final Logger logger = Logger.getLogger(ServicedbManager.class.getName());
 
   public ServicedbManager() {}
 
@@ -75,7 +75,7 @@ public class ServicedbManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return result;
@@ -107,7 +107,7 @@ public class ServicedbManager {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return result;
@@ -150,7 +150,7 @@ public class ServicedbManager {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE, e.getMessage(), e);
     }
     return result;
   }
@@ -174,7 +174,7 @@ public class ServicedbManager {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return result;
@@ -202,7 +202,7 @@ public class ServicedbManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return result;
@@ -225,7 +225,7 @@ public class ServicedbManager {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return result;
@@ -234,7 +234,7 @@ public class ServicedbManager {
   public boolean AddOperationDb(String username, String typeOfOp, int idDb) {
     boolean result = true;
     String query =
-      "INSERT INTO \"VisualDB\".public.\"OperazioneDatabase\" (username,iddatabase,data_operazione,tipo,ora_operazione) VALUES (?,?,?,?,?)";
+      "INSERT INTO \"VisualDB\".public.\"OperazioneDatabase\" (username,database,data_operazione,tipo,ora_operazione) VALUES (?,?,?,?,?)";
     try (
       Connection conn = PoolingPersistenceManager
         .getPersistenceManager()
@@ -256,7 +256,7 @@ public class ServicedbManager {
 
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
     return result;
   }

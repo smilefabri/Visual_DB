@@ -30,12 +30,14 @@ export const LoginForm: FC<LoginProps> = ({ setToken, setPrivilegeSession, setPr
     // Simula una richiesta di login
     try {
       const myHeaders = new Headers();
+
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON.stringify({
         username: username,
         password: password,
       });
+
       console.log(raw);
       const requestOptions: RequestInit = {
         method: "POST",
@@ -43,6 +45,7 @@ export const LoginForm: FC<LoginProps> = ({ setToken, setPrivilegeSession, setPr
         body: raw,
         redirect: "follow",
       };
+
       // Effettua la tua autenticazione qui, ad esempio con una chiamata fetch
       const { data } = await axios.post<CreateUserResponse>(
         "http://localhost:8080/visualdb-api/login",
@@ -50,20 +53,23 @@ export const LoginForm: FC<LoginProps> = ({ setToken, setPrivilegeSession, setPr
       );
 
       if (data.status) {
+
         console.log(JSON.stringify(data, null, 4));
         setToken({ token: data.username });
         setPrivilegeSession(data.privilege);
         setPrivilege(data.privilege);
         sessionStorage.setItem("jwtToken", data.token);
         window.location.reload();
+
       } else {
         console.error(JSON.stringify(data, null, 4));
       }
+
       //return data
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log("error message: ", error.message);
-        // 👇️ error: AxiosError<any, any>
+        
         return error.message;
       } else {
         console.log("unexpected error: ", error);

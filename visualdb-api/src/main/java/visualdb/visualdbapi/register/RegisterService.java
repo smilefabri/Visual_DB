@@ -2,6 +2,9 @@ package visualdb.visualdbapi.register;
 
 import com.google.gson.JsonObject;
 import java.sql.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import org.mindrot.jbcrypt.BCrypt;
 import visualdb.visualdbapi.db.PoolingPersistenceManager;
 import visualdb.visualdbapi.tableManager.ResultBoolInt;
 
@@ -9,6 +12,7 @@ public class RegisterService {
 
   public static final String REGISTER_PATH = "/register";
 
+  private static final Logger logger = Logger.getLogger(RegisterService.class.getName());
   JsonObject responseJsonRegister(
     String operation,
     boolean status,
@@ -43,7 +47,7 @@ public class RegisterService {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
 
     return state;
@@ -71,7 +75,7 @@ public class RegisterService {
       st.close();
       rs.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE,"errore email:"+email+", "+ e.getMessage(), e);
     }
 
     return state;
@@ -84,6 +88,7 @@ public class RegisterService {
     int privilegi
   ) {
     ResultBoolInt result = new ResultBoolInt(false, 0);
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
     String query =
       "INSERT INTO \"VisualDB\".public.\"Utenti\" (username,email,password,privilegi) VALUES (?, ?,?,?)";
@@ -95,7 +100,7 @@ public class RegisterService {
       PreparedStatement st = conn.prepareStatement(query);
       st.setString(1, username);
       st.setString(2, email);
-      st.setString(3, password);
+      st.setString(3, hashedPassword);
       st.setInt(4, privilegi);
 
       int rowsAffected = st.executeUpdate();
@@ -106,7 +111,7 @@ public class RegisterService {
       }
       st.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+        logger.log(Level.SEVERE,"errore durante la registrazione di:"+email+", "+username+". errore: "+ e.getMessage(), e);
     }
 
     return result;
